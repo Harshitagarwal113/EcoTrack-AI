@@ -2,6 +2,18 @@ import { google } from '@ai-sdk/google';
 import { streamText } from 'ai';
 import { createClient } from '@/services/supabase/server';
 import { checkRateLimit } from '@/utils/rateLimit';
+import { z } from 'zod';
+
+const reportSchema = z.object({
+  data: z.object({
+    timeframe: z.string(),
+    currentFootprint: z.number(),
+    trend: z.number(),
+    grade: z.string(),
+    carbonSaved: z.number(),
+    goalProgress: z.number(),
+  }),
+});
 
 export const maxDuration = 30;
 
@@ -19,7 +31,15 @@ export async function POST(req: Request) {
     return new Response('Unauthorized', { status: 401 });
   }
 
-  const { data } = await req.json();
+  try {
+    const body = await req.json();
+    const parseResult = reportSchema.safeParse(body);
+
+    if (!parseResult.success) {
+      return new Response(JSON.stringify({ error: 'Invalid request body', details: parseResult.error }), { status: 400, headers: { 'Content-Type': 'application/json' } });
+    }
+
+    const { data } = parseResult.data;
 
   const systemPrompt = `
     You are the AI Sustainability Coach for EcoTrack AI.
@@ -42,7 +62,6 @@ export async function POST(req: Request) {
     Keep the tone professional, premium, and concise. Do NOT include greetings or conclusions, just the two markdown sections requested.
   `;
 
-  try {
     const result = streamText({
       model: google('gemini-3.1-flash-lite'),
       system: systemPrompt,

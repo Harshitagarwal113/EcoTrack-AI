@@ -23,6 +23,9 @@ global.ResizeObserver = class ResizeObserver {
   disconnect() {}
 }
 
+// Mock scrollIntoView
+window.HTMLElement.prototype.scrollIntoView = vi.fn()
+
 // Mock next/navigation
 vi.mock('next/navigation', () => ({
   useRouter: () => ({
@@ -43,5 +46,5 @@ vi.mock('next-themes', () => ({
     themes: ['light', 'dark', 'system'],
     systemTheme: 'light',
   }),
-  ThemeProvider: ({ children }: any) => children,
+  ThemeProvider: ({ children }: { children: React.ReactNode }) => children,
 }))

@@ -3,6 +3,11 @@ import { streamText } from 'ai';
 import { getDashboardMetrics } from "@/features/dashboard/services/dashboard-metrics.service";
 import { createClient } from '@/services/supabase/server';
 import { checkRateLimit } from '@/utils/rateLimit';
+import { z } from 'zod';
+
+const chatSchema = z.object({
+  messages: z.array(z.any()), // Assuming messages is an array of ai-sdk messages
+});
 
 // Allow streaming responses up to 30 seconds
 export const maxDuration = 30;
@@ -21,45 +26,55 @@ export async function POST(req: Request) {
     return new Response('Unauthorized', { status: 401 });
   }
 
-  const { messages } = await req.json();
+  try {
+    const body = await req.json();
+    const parseResult = chatSchema.safeParse(body);
+    
+    if (!parseResult.success) {
+      return new Response(JSON.stringify({ error: 'Invalid request body' }), { status: 400, headers: { 'Content-Type': 'application/json' } });
+    }
 
-  // Fetch the user's actual footprint metrics to inject as context
-  const metrics = await getDashboardMetrics();
+    const { messages } = parseResult.data;
 
-  let contextString = "The user has not logged any data yet.";
-  if (metrics) {
-    contextString = `
-      Current Footprint (This Month): ${metrics.currentFootprint} kg CO2
-      Trend vs Last Month: ${metrics.trend > 0 ? '+' : ''}${metrics.trend}%
-      Sustainability Grade: ${metrics.grade}
-      Total Carbon Saved All Time: ${metrics.carbonSaved} kg
-      Current Goal Progress: ${metrics.goalProgress}%
+    // Fetch the user's actual footprint metrics to inject as context
+    const metrics = await getDashboardMetrics();
+
+    let contextString = "The user has not logged any data yet.";
+    if (metrics) {
+      contextString = `
+        Current Footprint (This Month): ${metrics.currentFootprint} kg CO2
+        Trend vs Last Month: ${metrics.trend > 0 ? '+' : ''}${metrics.trend}%
+        Sustainability Grade: ${metrics.grade}
+        Total Carbon Saved All Time: ${metrics.carbonSaved} kg
+        Current Goal Progress: ${metrics.goalProgress}%
+      `;
+    }
+
+    const systemPrompt = `
+      You are the AI Sustainability Coach for EcoTrack AI. 
+      You are powered by Google Gemini 3.1 Flash Lite.
+      Your job is to:
+      1. Analyze the user's footprint based on their data.
+      2. Suggest actionable improvements.
+      3. Generate weekly goals when asked.
+      4. Recommend sustainable habits.
+      5. Explain carbon impact simply.
+
+      Here is the user's current LIVE data from the database:
+      ${contextString}
+
+      Keep your tone encouraging, premium, and concise. Format your responses with markdown where appropriate (e.g., bullet points for goals).
     `;
+
+    const result = streamText({
+      model: google('gemini-3.1-flash-lite'),
+      system: systemPrompt,
+      messages,
+    });
+
+    return result.toTextStreamResponse();
+  } catch (error) {
+    console.error("AI Chat Generation Error:", error);
+    return new Response("Failed to generate AI response", { status: 500 });
   }
-
-  const systemPrompt = `
-    You are the AI Sustainability Coach for EcoTrack AI. 
-    You are powered by Google Gemini 3.1 Flash Lite.
-    Your job is to:
-    1. Analyze the user's footprint based on their data.
-    2. Suggest actionable improvements.
-    3. Generate weekly goals when asked.
-    4. Recommend sustainable habits.
-    5. Explain carbon impact simply.
-
-    Here is the user's current LIVE data from the database:
-    ${contextString}
-
-    Keep your tone encouraging, premium, and concise. Format your responses with markdown where appropriate (e.g., bullet points for goals).
-  `;
-
-  // Request the specific model the user asked for
-  // Note: if gemini-3.1-flash-lite is not available on your API key, change this to 'gemini-2.5-flash'
-  const result = streamText({
-    model: google('gemini-3.1-flash-lite'),
-    system: systemPrompt,
-    messages,
-  });
-
-  return result.toTextStreamResponse();
 }

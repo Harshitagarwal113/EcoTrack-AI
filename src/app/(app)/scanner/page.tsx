@@ -1,6 +1,7 @@
 "use client";
 
 import { useReceiptScanner } from "@/features/scanner/hooks/use-receipt-scanner.hook";
+import Image from "next/image";
 
 export default function ScannerPage() {
   const {
@@ -35,7 +36,9 @@ export default function ScannerPage() {
           
           {imagePreview ? (
             <div className="w-full h-full flex flex-col items-center justify-center">
-              <img src={imagePreview} alt="Receipt preview" className="max-h-64 object-contain rounded-xl shadow-lg mb-6" />
+              <div className="relative w-full max-w-sm h-64 mb-6">
+                <Image src={imagePreview} alt="Receipt preview" fill className="object-contain rounded-xl shadow-lg" unoptimized />
+              </div>
               <button 
                 onClick={() => fileInputRef.current?.click()}
                 className="bg-white/50 text-on-surface-variant font-label-md px-6 py-2 rounded-full hover:bg-white/80 transition-colors"

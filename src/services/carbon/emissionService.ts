@@ -36,6 +36,10 @@ const DEFAULT_FACTORS: EmissionFactors = {
   generalPurchases: 0.15,
 };
 
+/**
+ * Fetches current emission factors from the database, falling back to defaults if unavailable.
+ * @returns {Promise<EmissionFactors>} A map of emission categories to their kg CO2 equivalent factors.
+ */
 export async function getEmissionFactors(): Promise<EmissionFactors> {
   try {
     const supabase = await createClient();
