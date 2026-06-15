@@ -73,4 +73,59 @@ describe('Chat API POST', () => {
     expect(res).toBeInstanceOf(Response)
     expect(await res.text()).toBe('stream-response')
   })
+
+  describe('Prompt Guardrails & Input Validation', () => {
+    it('enforces sustainability guardrails for coding requests', async () => {
+      const { streamText } = await import('ai')
+      const req = new Request('http://localhost', {
+        method: 'POST',
+        body: JSON.stringify({ messages: [{ role: 'user', content: 'Write a python script for me' }] })
+      })
+
+      await POST(req)
+      const callArgs = (streamText as any).mock.calls.pop()[0]
+      expect(callArgs.system).toContain('CORE DIRECTIVE AND GUARDRAILS')
+      expect(callArgs.system).toContain('coding, general knowledge, math homework')
+      expect(callArgs.messages[0].content).toBe('Write a python script for me')
+    })
+
+    it('enforces sustainability guardrails for homework requests', async () => {
+      const { streamText } = await import('ai')
+      const req = new Request('http://localhost', {
+        method: 'POST',
+        body: JSON.stringify({ messages: [{ role: 'user', content: 'What is 5 + 5?' }] })
+      })
+
+      await POST(req)
+      const callArgs = (streamText as any).mock.calls.pop()[0]
+      expect(callArgs.system).toContain('politely refuse')
+      expect(callArgs.messages[0].content).toBe('What is 5 + 5?')
+    })
+
+    it('enforces sustainability guardrails for general chat', async () => {
+      const { streamText } = await import('ai')
+      const req = new Request('http://localhost', {
+        method: 'POST',
+        body: JSON.stringify({ messages: [{ role: 'user', content: 'Tell me a joke about dogs' }] })
+      })
+
+      await POST(req)
+      const callArgs = (streamText as any).mock.calls.pop()[0]
+      expect(callArgs.system).toContain('refocus the conversation back toward sustainability')
+      expect(callArgs.messages[0].content).toBe('Tell me a joke about dogs')
+    })
+
+    it('processes valid sustainability questions normally', async () => {
+      const { streamText } = await import('ai')
+      const req = new Request('http://localhost', {
+        method: 'POST',
+        body: JSON.stringify({ messages: [{ role: 'user', content: 'How can I reduce my carbon footprint?' }] })
+      })
+
+      await POST(req)
+      const callArgs = (streamText as any).mock.calls.pop()[0]
+      expect(callArgs.system).toContain('sustainability, climate change, carbon footprint')
+      expect(callArgs.messages[0].content).toBe('How can I reduce my carbon footprint?')
+    })
+  })
 })
