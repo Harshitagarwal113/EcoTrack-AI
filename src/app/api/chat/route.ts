@@ -54,9 +54,8 @@ export async function POST(req: Request) {
   `;
 
   // Request the specific model the user asked for
-  // Note: if gemini-3.1-flash-lite is not available on your API key, change this to 'gemini-2.5-flash'
   const result = streamText({
-    model: google('gemini-3.1-flash-lite'),
+    model: google('gemini-1.5-flash'),
     system: systemPrompt,
     messages,
   });

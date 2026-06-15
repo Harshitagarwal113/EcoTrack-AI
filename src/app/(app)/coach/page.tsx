@@ -29,7 +29,7 @@ export default function CoachPage() {
     <div className="px-4 md:px-12 max-w-container-max mx-auto w-full flex-1 flex flex-col gap-stack-lg pt-10 pb-8 h-[calc(100vh-6rem)]">
       <div className="flex flex-col stack-sm">
         <h1 className="font-display-lg text-display-lg-mobile md:text-display-lg text-on-surface">AI Coach</h1>
-        <p className="font-body-lg text-body-lg text-on-surface-variant">Powered by Google Gemini 3.1 Flash Lite</p>
+        <p className="font-body-lg text-body-lg text-on-surface-variant">Powered by Google Gemini 1.5 Flash</p>
       </div>
 
       <div className="flex-1 liquid-glass-panel rounded-[24px] overflow-hidden flex flex-col relative shadow-[0_20px_40px_rgba(16,185,129,0.05)]">
