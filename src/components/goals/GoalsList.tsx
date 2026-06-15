@@ -1,8 +1,17 @@
 import React from "react";
 import { ExportButton } from "@/components/ui/ExportButton";
 
+interface Goal {
+  id: string;
+  title: string;
+  status: string;
+  current_progress: number;
+  target_reduction: number;
+  deadline: string;
+}
+
 interface GoalsListProps {
-  goals: any[];
+  goals: Goal[];
   setShowGoalModal: (show: boolean) => void;
 }
 
@@ -27,7 +36,7 @@ export const GoalsList: React.FC<GoalsListProps> = ({ goals, setShowGoalModal })
         {goals.length === 0 ? (
           <div className="col-span-full py-12 text-center liquid-glass-panel rounded-2xl border border-dashed border-white/40">
             <span className="material-symbols-outlined text-[48px] text-primary/40 mb-3">flag</span>
-            <p className="font-body-lg text-on-surface-variant">You don't have any goals yet.</p>
+            <p className="font-body-lg text-on-surface-variant">You don&apos;t have any goals yet.</p>
             <button onClick={() => setShowGoalModal(true)} className="mt-4 text-primary font-label-md hover:underline">Set your first goal</button>
           </div>
         ) : (

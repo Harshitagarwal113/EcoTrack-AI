@@ -35,7 +35,7 @@ export function Sidebar() {
   return (
     <>
       {/* Desktop Sidebar */}
-      <nav className="hidden md:flex flex-col h-[calc(100vh-24px)] p-6 bg-white/70 dark:bg-inverse-surface/70 backdrop-blur-xl fixed left-3 top-3 bottom-3 w-72 rounded-xl border border-white/40 dark:border-outline-variant/20 saturate-150 shadow-[0_40px_40px_rgba(0,108,73,0.1)] z-50">
+      <nav className="hidden md:flex flex-col h-[calc(100vh-24px)] p-6 bg-white/70 dark:bg-surface-container-low/70 backdrop-blur-xl fixed left-3 top-3 bottom-3 w-72 rounded-xl border border-white/40 dark:border-outline-variant/20 saturate-150 shadow-[0_40px_40px_rgba(0,108,73,0.1)] z-50">
         <div className="mb-8 flex items-center gap-3 px-4 pt-4">
           <div className="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center text-on-primary-container">
             <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }} aria-hidden="true">energy_savings_leaf</span>
@@ -102,7 +102,7 @@ export function Sidebar() {
 
       {/* Mobile Bottom Navigation */}
       <nav className="md:hidden fixed bottom-4 left-4 right-4 z-50">
-        <div className="bg-white/80 dark:bg-inverse-surface/80 backdrop-blur-xl border border-white/40 shadow-[0_-10px_40px_rgba(16,185,129,0.15)] rounded-2xl flex items-center justify-between px-4 py-3">
+        <div className="bg-white/80 dark:bg-surface-container-low/80 backdrop-blur-xl border border-white/40 shadow-[0_-10px_40px_rgba(16,185,129,0.15)] rounded-2xl flex items-center justify-between px-4 py-3">
           {mobileNavigation.map((item) => {
             const isActive = pathname === item.href;
             return (

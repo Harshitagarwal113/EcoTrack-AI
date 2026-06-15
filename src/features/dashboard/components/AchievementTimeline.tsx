@@ -35,13 +35,12 @@ export function AchievementTimeline() {
       {BADGE_DEFINITIONS.map((badgeDef) => {
         const isEarned = earnedIds.has(badgeDef.id);
         const earnedData = earnedBadges.find(b => b.badge_id === badgeDef.id);
-        
         return (
           <div 
             key={badgeDef.id} 
             className={`min-w-[240px] snap-start relative p-5 rounded-2xl border transition-all ${
               isEarned 
-                ? 'bg-surface dark:bg-inverse-surface border-outline-variant/30 shadow-sm' 
+                ? 'bg-surface-container-low border-outline-variant/30 shadow-sm' 
                 : 'bg-surface-variant/20 border-transparent opacity-60 grayscale'
             }`}
           >

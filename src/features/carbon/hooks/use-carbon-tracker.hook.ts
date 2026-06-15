@@ -2,7 +2,6 @@ import { useState, useMemo, useCallback } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { saveCarbonFootprint, fetchEmissionFactors } from "@/features/carbon/services/carbon-calculation.service";
 import type { CalculatorInput } from "@/types";
-import { EmissionFactors } from "@/services/carbon/emissionService";
 
 export function useCarbonTracker() {
   const queryClient = useQueryClient();
@@ -54,12 +53,12 @@ export function useCarbonTracker() {
     return "D";
   }, [currentTotal]);
 
-  const handleNumChange = useCallback((category: keyof CalculatorInput, field: string, value: string) => {
+  const handleNumChange = useCallback((category: 'transportation' | 'energy' | 'shopping', field: string, value: string) => {
     const num = parseFloat(value) || 0;
     setFormData((prev) => ({
       ...prev,
       [category]: {
-        ...(prev[category] as any),
+        ...prev[category],
         [field]: num,
       },
     }));

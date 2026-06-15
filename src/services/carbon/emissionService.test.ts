@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, vi } from 'vitest'
 import { getEmissionFactors } from './emissionService'
 import * as serverClient from '@/services/supabase/server'
@@ -35,5 +36,14 @@ describe('Emission Service calculations', () => {
     expect(factors.car).toBe(0.5)
     // Should fallback to default for missing DB factors
     expect(factors.bus).toBeCloseTo(0.089)
+  })
+
+  it('returns default factors when exception is thrown', async () => {
+    vi.spyOn(serverClient, 'createClient').mockRejectedValueOnce(new Error('DB connection error'))
+
+    const factors = await getEmissionFactors()
+    
+    expect(factors.car).toBeCloseTo(0.192)
+    expect(factors.train).toBeCloseTo(0.041)
   })
 })

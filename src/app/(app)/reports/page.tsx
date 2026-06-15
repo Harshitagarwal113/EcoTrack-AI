@@ -6,9 +6,27 @@ import { useCompletion } from "@ai-sdk/react";
 import ReactMarkdown from "react-markdown";
 import { FootprintChart } from "@/features/dashboard/components/FootprintChart";
 
+interface ReportGoal {
+  title: string;
+  target_reduction: number;
+  current_progress: number;
+  status: string;
+}
+
+interface ReportData {
+  timeframe: 'weekly' | 'monthly';
+  currentFootprint: number;
+  trend: number;
+  grade: string;
+  carbonSaved: number;
+  goalProgress: number;
+  goals: ReportGoal[];
+  chartData: { date: string; emissions: number }[];
+}
+
 export default function ReportsPage() {
   const [timeframe, setTimeframe] = useState<'weekly' | 'monthly'>('weekly');
-  const [reportData, setReportData] = useState<any>(null);
+  const [reportData, setReportData] = useState<ReportData | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const reportRef = useRef<HTMLDivElement>(null);
 
@@ -127,7 +145,7 @@ export default function ReportsPage() {
             {/* Analytics Chart */}
             <div className="mt-8 mb-6 bg-surface-container/30 p-6 rounded-2xl border border-outline-variant/20">
               <h3 className="font-headline-md text-on-surface mb-4">Emissions Trend</h3>
-              <FootprintChart data={reportData.chartData || []} />
+              <FootprintChart data={(reportData.chartData || []).map(item => ({ name: item.date, value: item.emissions }))} />
             </div>
 
             {/* Goals Progress Details */}
@@ -135,7 +153,7 @@ export default function ReportsPage() {
               <div className="mt-2 mb-6">
                 <h3 className="font-headline-md text-on-surface mb-4">Active Goals</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {reportData.goals.map((goal: any, i: number) => {
+                  {reportData.goals.map((goal: ReportGoal, i: number) => {
                     const pct = Math.min(100, Math.round((goal.current_progress / goal.target_reduction) * 100));
                     return (
                       <div key={i} className="p-5 bg-surface-container rounded-2xl">

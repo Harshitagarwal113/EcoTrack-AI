@@ -122,7 +122,6 @@ export const getFootprintChartData = cache(async function getFootprintChartData(
 
     // Format for Recharts
     const chartData = Object.keys(aggregated).sort().map(dateStr => {
-      const d = new Date(dateStr);
       // To prevent timezone shifting, split the string
       const [year, month, day] = dateStr.split('-');
       const localDate = new Date(Number(year), Number(month) - 1, Number(day));

@@ -26,7 +26,7 @@ export function Testimonials() {
   ];
 
   return (
-    <section className="py-24 px-4 bg-surface dark:bg-inverse-surface border-y border-outline-variant/20 relative overflow-hidden">
+    <section className="py-24 px-4 bg-surface border-y border-outline-variant/20 relative overflow-hidden">
       {/* Background decoration */}
       <div className="absolute top-1/2 left-0 -translate-y-1/2 w-64 h-64 bg-tertiary/10 rounded-full blur-[80px] pointer-events-none"></div>
       
@@ -49,7 +49,7 @@ export function Testimonials() {
                   {t.grade}
                 </div>
               </div>
-              <p className="text-on-surface-variant italic leading-relaxed font-medium">"{t.text}"</p>
+              <p className="text-on-surface-variant italic leading-relaxed font-medium">&ldquo;{t.text}&rdquo;</p>
             </div>
           ))}
         </div>

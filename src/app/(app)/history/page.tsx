@@ -3,11 +3,23 @@
 import { useQuery } from "@tanstack/react-query";
 import { getHistory } from "@/features/history/services/history.service";
 
+interface HistoryEntry {
+  id: string;
+  carbon_saved: number;
+  created_at: string;
+  activities: {
+    name: string;
+    category: string;
+  } | null;
+}
+
 export default function HistoryPage() {
-  const { data: history = [], isLoading } = useQuery({
+  const { data = [], isLoading } = useQuery({
     queryKey: ['history'],
     queryFn: () => getHistory(50),
   });
+
+  const history = (data || []) as unknown as HistoryEntry[];
 
   return (
     <div className="px-4 md:px-12 max-w-container-max mx-auto w-full flex-1 flex flex-col gap-stack-lg pt-10 pb-12">
@@ -28,8 +40,8 @@ export default function HistoryPage() {
           </div>
         ) : (
           <div className="flex flex-col gap-4">
-            {history.map((entry: any) => (
-              <div key={entry.id} className="bg-surface/50 dark:bg-inverse-surface/50 p-5 rounded-2xl border border-outline-variant/30 flex justify-between items-center hover:bg-surface transition-colors">
+            {history.map((entry: HistoryEntry) => (
+              <div key={entry.id} className="bg-surface-container-low/50 p-5 rounded-2xl border border-outline-variant/30 flex justify-between items-center hover:bg-surface transition-colors">
                 <div className="flex items-center gap-4">
                   <div className="w-12 h-12 bg-primary/10 text-primary rounded-full flex items-center justify-center">
                     <span className="material-symbols-outlined">

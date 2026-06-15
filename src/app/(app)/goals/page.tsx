@@ -4,7 +4,6 @@ import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getProfileStats, getGoals, createGoal } from "@/features/goals/services/goals-management.service";
 import { getGlobalChallenges, getUserChallenges, joinChallenge } from "@/features/community/services/community-challenges.service";
-import { ExportButton } from "@/components/ui/ExportButton";
 import { GoalModal } from "@/components/goals/GoalModal";
 import { GoalsList } from "@/components/goals/GoalsList";
 import { ChallengesList } from "@/components/goals/ChallengesList";
@@ -46,7 +45,7 @@ export default function GoalsPage() {
       // Optimistic Update
       await queryClient.cancelQueries({ queryKey: ['joinedChallenges'] });
       const previous = queryClient.getQueryData(['joinedChallenges']);
-      queryClient.setQueryData(['joinedChallenges'], (old: any) => [...(old || []), { challenge_id: challengeId }]);
+      queryClient.setQueryData<{ challenge_id: string }[]>(['joinedChallenges'], (old) => [...(old || []), { challenge_id: challengeId }]);
       return { previous };
     },
     onError: (err, challengeId, context) => {
@@ -72,7 +71,7 @@ export default function GoalsPage() {
   };
 
   return (
-    <div id="goals-progress-export" className="px-4 md:px-12 max-w-container-max mx-auto w-full flex-1 flex flex-col gap-stack-lg pt-10 pb-12 bg-surface dark:bg-inverse-surface rounded-2xl">
+    <div id="goals-progress-export" className="px-4 md:px-12 max-w-container-max mx-auto w-full flex-1 flex flex-col gap-stack-lg pt-10 pb-12 bg-surface rounded-2xl">
       
       {/* Hero Stats */}
       <section className="liquid-glass-panel rounded-[32px] p-8 md:p-12 text-center md:text-left flex flex-col md:flex-row items-center justify-between gap-8 border border-white/40 shadow-[0_30px_60px_rgba(16,185,129,0.1)] relative overflow-hidden">
@@ -85,7 +84,7 @@ export default function GoalsPage() {
           </p>
         </div>
 
-        <div className="flex items-center gap-6 z-10 bg-white/60 p-6 rounded-2xl shadow-sm border border-white/50 backdrop-blur-md">
+        <div className="flex items-center gap-6 z-10 bg-surface-container-lowest/60 p-6 rounded-2xl shadow-sm border border-outline-variant/20 backdrop-blur-md">
           <div className="text-center px-4 border-r border-outline-variant/30">
             <p className="font-label-sm text-on-surface-variant uppercase tracking-wider">Points</p>
             <p className="font-display-md text-primary">{stats?.points || 0}</p>

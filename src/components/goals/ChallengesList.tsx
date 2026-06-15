@@ -1,7 +1,15 @@
 import React from "react";
 
+interface Challenge {
+  id: string;
+  title: string;
+  description: string;
+  end_date: string;
+  participants_count: number;
+}
+
 interface ChallengesListProps {
-  challenges: any[];
+  challenges: Challenge[];
   hasJoinedChallenge: (challengeId: string) => boolean;
   handleJoinChallenge: (challengeId: string) => Promise<void>;
 }

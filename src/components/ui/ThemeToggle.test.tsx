@@ -4,7 +4,7 @@ import { ThemeToggle } from './ThemeToggle'
 import * as nextThemes from 'next-themes'
 
 describe('ThemeToggle Component', () => {
-  it('renders correctly and toggles theme', () => {
+  it('renders correctly and toggles theme', async () => {
     const setThemeMock = vi.fn()
     vi.spyOn(nextThemes, 'useTheme').mockImplementation(() => ({
       theme: 'light',
@@ -16,7 +16,7 @@ describe('ThemeToggle Component', () => {
 
     render(<ThemeToggle />)
     
-    const button = screen.getByRole('button', { name: /Toggle Dark Mode/i })
+    const button = await screen.findByRole('button', { name: /Toggle Dark Mode/i })
     expect(button).toBeInTheDocument()
 
     // It shows dark_mode icon when resolvedTheme is light
@@ -27,7 +27,7 @@ describe('ThemeToggle Component', () => {
     expect(setThemeMock).toHaveBeenCalledWith('dark')
   })
 
-  it('shows light_mode icon when theme is dark', () => {
+  it('shows light_mode icon when theme is dark', async () => {
     const setThemeMock = vi.fn()
     vi.spyOn(nextThemes, 'useTheme').mockImplementation(() => ({
       theme: 'dark',
@@ -38,7 +38,7 @@ describe('ThemeToggle Component', () => {
     }))
 
     render(<ThemeToggle />)
-    expect(screen.getByText('light_mode')).toBeInTheDocument()
+    expect(await screen.findByText('light_mode')).toBeInTheDocument()
     
     const button = screen.getByRole('button', { name: /Toggle Dark Mode/i })
     fireEvent.click(button)

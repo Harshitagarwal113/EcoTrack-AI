@@ -29,8 +29,9 @@ export function useReceiptScanner() {
       }
 
       setScanResult(json.data);
-    } catch (err: any) {
-      setError(err.message || 'An error occurred during scanning.');
+    } catch (err) {
+      const errMsg = err instanceof Error ? err.message : 'An error occurred during scanning.';
+      setError(errMsg);
     } finally {
       setIsScanning(false);
     }

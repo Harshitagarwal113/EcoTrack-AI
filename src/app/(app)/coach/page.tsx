@@ -43,7 +43,7 @@ export default function CoachPage() {
               <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center text-primary mb-2 shadow-inner">
                 <span className="material-symbols-outlined text-[32px]">psychology</span>
               </div>
-              <h3 className="font-headline-md text-headline-md text-on-surface">I'm your Sustainability Coach</h3>
+              <h3 className="font-headline-md text-headline-md text-on-surface">I&apos;m your Sustainability Coach</h3>
               <p className="font-body-md text-body-md text-on-surface-variant">
                 I have real-time access to your carbon footprint. Ask me to analyze your progress, suggest weekly goals, or recommend sustainable habits!
               </p>

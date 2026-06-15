@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, vi } from 'vitest'
 import { render, screen, waitFor } from '@testing-library/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
@@ -50,5 +51,23 @@ describe('StreakCards Component', () => {
     
     const zeros = screen.getAllByText('0')
     expect(zeros.length).toBeGreaterThan(0)
+  })
+
+  it('renders default icon/label for unknown streak types', async () => {
+    vi.spyOn(gamification, 'getStreaks').mockResolvedValue([
+      { id: '4', streak_type: 'unknown_streak', current_streak: 5, longest_streak: 5 },
+    ] as any)
+
+    const queryClient = new QueryClient();
+    render(
+      <QueryClientProvider client={queryClient}>
+        <StreakCards />
+      </QueryClientProvider>
+    )
+    
+    await waitFor(() => {
+      expect(screen.getByText('unknown_streak')).toBeInTheDocument()
+    })
+    expect(screen.getByText('star')).toBeInTheDocument()
   })
 })

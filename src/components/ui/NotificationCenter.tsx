@@ -4,23 +4,20 @@ import { useState, useEffect, useRef } from "react";
 import { getNotifications, markNotificationAsRead, clearAllNotifications } from "@/features/settings/services/notification.service";
 import { evaluateAndGenerateReminders } from "@/features/ai-coach/services/ai-recommendation.service";
 
+interface Notification {
+  id: string;
+  title: string;
+  message: string;
+  type: string;
+  is_read: boolean;
+  created_at: string;
+}
+
 export function NotificationCenter() {
   const [isOpen, setIsOpen] = useState(false);
-  const [notifications, setNotifications] = useState<any[]>([]);
+  const [notifications, setNotifications] = useState<Notification[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    fetchNotifications();
-
-    const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setIsOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
 
   const fetchNotifications = async () => {
     setIsLoading(true);
@@ -30,6 +27,23 @@ export function NotificationCenter() {
     setNotifications(data);
     setIsLoading(false);
   };
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      fetchNotifications();
+    }, 0);
+
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      clearTimeout(timer);
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   const handleToggle = () => {
     setIsOpen(!isOpen);
@@ -61,12 +75,12 @@ export function NotificationCenter() {
           {unreadCount > 0 ? 'notifications_active' : 'notifications'}
         </span>
         {unreadCount > 0 && (
-          <span className="absolute top-1 right-1 w-2.5 h-2.5 bg-error rounded-full ring-2 ring-white dark:ring-inverse-surface"></span>
+          <span className="absolute top-1 right-1 w-2.5 h-2.5 bg-error rounded-full ring-2 ring-white dark:ring-surface-container-lowest"></span>
         )}
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-80 sm:w-96 bg-white dark:bg-inverse-surface rounded-2xl shadow-xl border border-outline-variant/30 overflow-hidden z-50 animate-in fade-in slide-in-from-top-2">
+        <div className="absolute right-0 mt-2 w-80 sm:w-96 bg-surface-container-lowest rounded-2xl shadow-xl border border-outline-variant/30 overflow-hidden z-50 animate-in fade-in slide-in-from-top-2">
           <div className="p-4 border-b border-outline-variant/30 flex justify-between items-center bg-surface-container/30">
             <h3 className="font-headline-sm text-on-surface">Notifications</h3>
             {notifications.length > 0 && (
@@ -87,7 +101,7 @@ export function NotificationCenter() {
             ) : notifications.length === 0 ? (
               <div className="p-8 text-center flex flex-col items-center">
                 <span className="material-symbols-outlined text-[40px] text-on-surface-variant/40 mb-2">notifications_off</span>
-                <p className="font-body-sm text-on-surface-variant">You're all caught up!</p>
+                <p className="font-body-sm text-on-surface-variant">You&apos;re all caught up!</p>
               </div>
             ) : (
               <div className="flex flex-col">

@@ -1,6 +1,5 @@
 import { test, expect } from '@playwright/test';
 import { mockAuthenticatedSession } from './test-utils';
-import path from 'path';
 
 test.describe('Receipt Scanner', () => {
   test.beforeEach(async ({ page }) => {

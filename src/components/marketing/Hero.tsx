@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { ThemeToggle } from "@/components/ui/ThemeToggle";
 
 export function Hero() {
   return (
@@ -33,7 +32,7 @@ export function Hero() {
           </Link>
           <a 
             href="#features"
-            className="w-full sm:w-auto px-8 py-4 rounded-xl bg-surface dark:bg-inverse-surface text-on-surface border border-outline-variant/30 hover:bg-surface-variant/50 transition-colors font-label-lg font-bold"
+            className="w-full sm:w-auto px-8 py-4 rounded-xl bg-surface text-on-surface border border-outline-variant/30 hover:bg-surface-variant/50 transition-colors font-label-lg font-bold"
           >
             Explore Features
           </a>

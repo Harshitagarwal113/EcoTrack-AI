@@ -37,7 +37,7 @@ export function StreakCards() {
         const isMilestone = streak.current_streak > 0 && streak.current_streak % 7 === 0;
         
         return (
-          <div key={streak.streak_type} className="relative p-5 rounded-2xl bg-surface dark:bg-inverse-surface border border-outline-variant/30 shadow-sm overflow-hidden flex flex-col justify-between group hover:shadow-md transition-shadow">
+          <div key={streak.streak_type} className="relative p-5 rounded-2xl bg-surface-container-low border border-outline-variant/30 shadow-sm overflow-hidden flex flex-col justify-between group hover:shadow-md transition-shadow">
             {isMilestone && (
               <div className="absolute top-0 right-0 w-32 h-32 bg-tertiary/10 rounded-full blur-2xl -mr-10 -mt-10 pointer-events-none"></div>
             )}

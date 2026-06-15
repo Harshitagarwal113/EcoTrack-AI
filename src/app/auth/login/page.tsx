@@ -50,7 +50,7 @@ export default function LoginPage() {
         </button>
 
         <p className="mt-8 text-label-sm text-on-surface-variant text-center max-w-xs">
-          By continuing, you agree to EcoTrack AI's Terms of Service and Privacy Policy.
+          By continuing, you agree to EcoTrack AI&apos;s Terms of Service and Privacy Policy.
         </p>
       </div>
     </div>

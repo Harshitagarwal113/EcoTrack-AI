@@ -23,9 +23,10 @@ export function SeedButton() {
         setStatus("error");
         setErrorMsg(result.error || "Failed to seed data");
       }
-    } catch (e: any) {
+    } catch (e) {
+      const message = e instanceof Error ? e.message : "Unknown error";
       setStatus("error");
-      setErrorMsg(e.message || "Unknown error");
+      setErrorMsg(message);
     } finally {
       setIsLoading(false);
     }

@@ -4,7 +4,6 @@ import { getDashboardMetrics, getFootprintChartData } from "@/features/dashboard
 import { FootprintChart } from "@/features/dashboard/components/FootprintChart";
 import { StreakCards } from "@/features/dashboard/components/StreakCards";
 import { AchievementTimeline } from "@/features/dashboard/components/AchievementTimeline";
-import { createClient } from "@/services/supabase/server";
 import { ExportButton } from "@/components/ui/ExportButton";
 import { NotificationCenter } from "@/components/ui/NotificationCenter";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
@@ -12,8 +11,6 @@ import { ThemeToggle } from "@/components/ui/ThemeToggle";
 export default async function DashboardPage() {
   const metrics = await getDashboardMetrics();
   const chartData = await getFootprintChartData();
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
 
   // Fallbacks if not logged in or no data yet
   const total = metrics?.currentFootprint || 0;
@@ -44,7 +41,7 @@ export default async function DashboardPage() {
         </div>
 
         <div className="flex items-center gap-4 text-primary dark:text-primary-fixed shrink-0">
-          <ExportButton targetId="carbon-analytics-export" filename="Carbon-Analytics.pdf" label="Export" className="hidden sm:flex py-1.5 px-3 text-sm bg-white/50 dark:bg-inverse-surface/50" />
+          <ExportButton targetId="carbon-analytics-export" filename="Carbon-Analytics.pdf" label="Export" className="hidden sm:flex py-1.5 px-3 text-sm bg-surface-container-lowest/50" />
           <ThemeToggle />
           <NotificationCenter />
           <button aria-label="Help" className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-black/5 dark:hover:bg-white/5 transition-colors focus:outline-none hidden sm:flex">
@@ -54,7 +51,7 @@ export default async function DashboardPage() {
       </header>
 
       {/* Canvas */}
-      <div id="carbon-analytics-export" className="px-4 md:px-12 max-w-container-max mx-auto w-full flex-1 flex flex-col gap-stack-lg pt-4 pb-8 bg-surface dark:bg-inverse-surface rounded-2xl">
+      <div id="carbon-analytics-export" className="px-4 md:px-12 max-w-container-max mx-auto w-full flex-1 flex flex-col gap-stack-lg pt-4 pb-8 bg-surface rounded-2xl">
         <div className="flex flex-col lg:flex-row gap-gutter">
           {/* Main Dashboard Area */}
           <div className="flex-1 flex flex-col gap-6">

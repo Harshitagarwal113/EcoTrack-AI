@@ -121,7 +121,8 @@ export async function evaluateAndGenerateReminders() {
         
       const categoryMap = new Map<string, number>();
       recentEntries?.forEach(e => {
-        const cat = (e.activities as any)?.category || 'Other';
+        const act = e.activities as unknown as { category: string } | null;
+        const cat = act?.category || 'Other';
         categoryMap.set(cat, (categoryMap.get(cat) || 0) + Number(e.carbon_calculated));
       });
       const breakdownStr = Array.from(categoryMap.entries()).map(([k, v]) => `${k}: ${Math.round(v)}kg`).join(', ');

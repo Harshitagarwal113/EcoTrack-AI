@@ -20,13 +20,13 @@ export function Showcases() {
           
           <div className="flex-1 w-full">
             <div className="relative p-1 rounded-3xl bg-gradient-to-br from-primary/30 to-tertiary/30 shadow-2xl shadow-primary/10">
-              <div className="bg-surface dark:bg-inverse-surface rounded-[22px] p-6 h-full border border-white/10">
+              <div className="bg-surface rounded-[22px] p-6 h-full border border-white/10">
                 <div className="flex gap-4 mb-6">
                   <div className="w-10 h-10 rounded-full bg-primary/20 flex-shrink-0 flex items-center justify-center text-primary">
                     <span className="material-symbols-outlined">psychology</span>
                   </div>
                   <div className="bg-surface-container-lowest p-4 rounded-2xl rounded-tl-none border border-outline-variant/20 shadow-sm text-on-surface">
-                    <p className="font-medium text-sm">I noticed your transport emissions spiked 15% this week. Given your "Eco Warrior" streak, I recommend swapping your Friday commute for the Metro to stay under your 10kg limit.</p>
+                    <p className="font-medium text-sm">I noticed your transport emissions spiked 15% this week. Given your &quot;Eco Warrior&quot; streak, I recommend swapping your Friday commute for the Metro to stay under your 10kg limit.</p>
                   </div>
                 </div>
                 <div className="flex gap-4 flex-row-reverse">

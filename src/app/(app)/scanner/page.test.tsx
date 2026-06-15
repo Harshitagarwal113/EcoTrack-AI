@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { render, screen, fireEvent } from '@testing-library/react'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import ScannerPage from './page'
@@ -75,5 +76,25 @@ describe('ScannerPage', () => {
     expect(screen.getByText('25.5 kg')).toBeInTheDocument()
     expect(screen.getByText('Bring your own bag')).toBeInTheDocument()
     expect(screen.getByText('Buy local produce')).toBeInTheDocument()
+  })
+
+  it('allows uploading a different receipt when preview exists', () => {
+    const mockClick = vi.spyOn(HTMLInputElement.prototype, 'click').mockImplementation(() => {})
+    ;(useReceiptScannerHook.useReceiptScanner as any).mockReturnValue({
+      imagePreview: 'http://example.com/receipt.jpg',
+      isScanning: false,
+      isSaving: false,
+      scanResult: null,
+      error: null,
+      fileInputRef: { current: null },
+      handleImageUpload: vi.fn(),
+      handleSave: vi.fn()
+    })
+
+    render(<ScannerPage />)
+    const button = screen.getByText('Upload Different Receipt')
+    fireEvent.click(button)
+    expect(mockClick).toHaveBeenCalled()
+    mockClick.mockRestore()
   })
 })

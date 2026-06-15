@@ -28,10 +28,10 @@ export const GoalModal: React.FC<GoalModalProps> = ({
   if (!showGoalModal) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center px-4 bg-black/40 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="bg-surface dark:bg-inverse-surface w-full max-w-md rounded-3xl shadow-2xl p-8 border border-white/20">
+    <div className="fixed inset-0 z-50 flex items-center justify-center px-4 bg-black/40 backdrop-blur-sm animate-in fade-in duration-200" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+      <div className="bg-surface-container-lowest w-full max-w-md rounded-3xl shadow-2xl p-8 border border-outline-variant/20">
         <div className="flex justify-between items-center mb-6">
-          <h3 className="font-headline-md text-on-surface">Set New Goal</h3>
+          <h3 id="modal-title" className="font-headline-md text-on-surface">Set New Goal</h3>
           <button onClick={() => setShowGoalModal(false)} className="text-on-surface-variant hover:text-error">
             <span className="material-symbols-outlined">close</span>
           </button>
@@ -47,7 +47,7 @@ export const GoalModal: React.FC<GoalModalProps> = ({
               placeholder="e.g. Reduce meat consumption"
               value={newGoalTitle}
               onChange={e => setNewGoalTitle(e.target.value)}
-              className="w-full bg-white/50 border border-outline-variant/50 rounded-xl px-4 py-3 font-body-md focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
+              className="w-full bg-surface-container/50 border border-outline-variant/50 rounded-xl px-4 py-3 font-body-md focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
             />
           </div>
           
@@ -60,7 +60,7 @@ export const GoalModal: React.FC<GoalModalProps> = ({
               min="1"
               value={newGoalTarget}
               onChange={e => setNewGoalTarget(e.target.value)}
-              className="w-full bg-white/50 border border-outline-variant/50 rounded-xl px-4 py-3 font-body-md focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
+              className="w-full bg-surface-container/50 border border-outline-variant/50 rounded-xl px-4 py-3 font-body-md focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
             />
           </div>
 
@@ -70,7 +70,7 @@ export const GoalModal: React.FC<GoalModalProps> = ({
               id="goal-duration"
               value={newGoalDuration}
               onChange={e => setNewGoalDuration(e.target.value)}
-              className="w-full bg-white/50 border border-outline-variant/50 rounded-xl px-4 py-3 font-body-md focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all appearance-none"
+              className="w-full bg-surface-container/50 border border-outline-variant/50 rounded-xl px-4 py-3 font-body-md focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all appearance-none"
             >
               <option value="7">Weekly (7 Days)</option>
               <option value="30">Monthly (30 Days)</option>

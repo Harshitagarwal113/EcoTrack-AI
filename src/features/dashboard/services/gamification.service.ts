@@ -161,9 +161,18 @@ export async function evaluateBadges() {
   const { data: profile } = await supabase.from("profiles").select("sustainability_grade, total_carbon_saved").eq("user_id", user.id).single();
   const { data: allEntries } = await supabase.from("carbon_entries").select("activities(name, category)").eq("user_id", user.id);
   
-  const ptCount = allEntries?.filter(e => ['Bus', 'Train', 'Metro', 'Bicycle', 'Walking'].includes((e.activities as any)?.name)).length || 0;
-  const energyCount = allEntries?.filter(e => (e.activities as any)?.category === 'Energy').length || 0;
-  const shopCount = allEntries?.filter(e => (e.activities as any)?.category === 'Shopping').length || 0;
+  const ptCount = allEntries?.filter(e => {
+    const act = e.activities as unknown as { name: string; category: string } | null;
+    return act && ['Bus', 'Train', 'Metro', 'Bicycle', 'Walking'].includes(act.name);
+  }).length || 0;
+  const energyCount = allEntries?.filter(e => {
+    const act = e.activities as unknown as { name: string; category: string } | null;
+    return act && act.category === 'Energy';
+  }).length || 0;
+  const shopCount = allEntries?.filter(e => {
+    const act = e.activities as unknown as { name: string; category: string } | null;
+    return act && act.category === 'Shopping';
+  }).length || 0;
 
   await checkAndAward('carbon_reducer', (profile?.total_carbon_saved || 0) >= 50);
   await checkAndAward('green_commuter', ptCount >= 5);

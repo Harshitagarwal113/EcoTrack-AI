@@ -24,7 +24,7 @@ export async function POST(req: Request) {
     let body;
     try {
       body = await req.json();
-    } catch (e) {
+    } catch {
       return Response.json({ error: 'No image provided' }, { status: 400 });
     }
     

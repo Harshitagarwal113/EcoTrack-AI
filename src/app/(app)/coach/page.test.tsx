@@ -1,15 +1,18 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { render, screen, fireEvent } from '@testing-library/react'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import CoachPage from './page'
 
 // Mock the ai/react hook
 const mockSendMessage = vi.fn()
+const mockUseChat = vi.fn(() => ({
+  messages: [] as any[],
+  sendMessage: mockSendMessage,
+  status: 'ready'
+}))
+
 vi.mock('@ai-sdk/react', () => ({
-  useChat: () => ({
-    messages: [],
-    sendMessage: mockSendMessage,
-    status: 'ready'
-  })
+  useChat: () => mockUseChat()
 }))
 
 // Mock matchMedia
@@ -24,6 +27,11 @@ window.matchMedia = vi.fn().mockImplementation(query => ({
 describe('CoachPage', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    mockUseChat.mockReturnValue({
+      messages: [],
+      sendMessage: mockSendMessage,
+      status: 'ready'
+    })
   })
 
   it('renders the initial welcome screen', () => {
@@ -63,5 +71,32 @@ describe('CoachPage', () => {
       role: 'user',
       parts: [{ type: 'text', text: 'Analyze my carbon footprint this month.' }]
     })
+  })
+
+  it('renders chat messages correctly', () => {
+    mockUseChat.mockReturnValue({
+      messages: [
+        { id: '1', role: 'user', parts: [{ type: 'text', text: 'Hello coach' }] },
+        { id: '2', role: 'assistant', parts: [{ type: 'text', text: 'Hello! Ask me anything.' }] }
+      ],
+      sendMessage: mockSendMessage,
+      status: 'ready'
+    })
+
+    render(<CoachPage />)
+    expect(screen.getByText('Hello coach')).toBeInTheDocument()
+    expect(screen.getByText('Gemini Coach')).toBeInTheDocument()
+    expect(screen.getByText('Hello! Ask me anything.')).toBeInTheDocument()
+  })
+
+  it('renders loading dots when status is submitted/streaming', () => {
+    mockUseChat.mockReturnValue({
+      messages: [],
+      sendMessage: mockSendMessage,
+      status: 'submitted'
+    })
+
+    const { container } = render(<CoachPage />)
+    expect(container.querySelector('.animate-bounce')).toBeInTheDocument()
   })
 })

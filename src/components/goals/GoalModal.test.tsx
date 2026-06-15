@@ -47,4 +47,38 @@ describe('GoalModal', () => {
     const submitBtn = screen.getByRole('button', { name: /sync/i })
     expect(submitBtn).toBeDisabled()
   })
+
+  it('calls setNewGoalTitle on title change', () => {
+    const setNewGoalTitle = vi.fn()
+    render(<GoalModal {...defaultProps} setNewGoalTitle={setNewGoalTitle} />)
+    fireEvent.change(screen.getByLabelText('Goal Title'), { target: { value: 'New Title' } })
+    expect(setNewGoalTitle).toHaveBeenCalledWith('New Title')
+  })
+
+  it('calls setNewGoalTarget on target change', () => {
+    const setNewGoalTarget = vi.fn()
+    render(<GoalModal {...defaultProps} setNewGoalTarget={setNewGoalTarget} />)
+    fireEvent.change(screen.getByLabelText(/Target Reduction/i), { target: { value: '25' } })
+    expect(setNewGoalTarget).toHaveBeenCalledWith('25')
+  })
+
+  it('calls setNewGoalDuration on duration select change', () => {
+    const setNewGoalDuration = vi.fn()
+    render(<GoalModal {...defaultProps} setNewGoalDuration={setNewGoalDuration} />)
+    fireEvent.change(screen.getByLabelText(/Duration/i), { target: { value: '30' } })
+    expect(setNewGoalDuration).toHaveBeenCalledWith('30')
+  })
+
+  it('calls setShowGoalModal(false) on Cancel or Close click', () => {
+    const setShowGoalModal = vi.fn()
+    render(<GoalModal {...defaultProps} setShowGoalModal={setShowGoalModal} />)
+    
+    // Click Cancel
+    fireEvent.click(screen.getByRole('button', { name: 'Cancel' }))
+    expect(setShowGoalModal).toHaveBeenCalledWith(false)
+    
+    // Click Close
+    fireEvent.click(screen.getByRole('button', { name: 'close' }))
+    expect(setShowGoalModal).toHaveBeenCalledWith(false)
+  })
 })
