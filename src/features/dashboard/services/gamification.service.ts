@@ -7,7 +7,7 @@ export async function getStreaks() {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return [];
 
-  const types = ['active_days', 'completed_goals', 'carbon_reductions'];
+  const types = ['completed_goals', 'carbon_reductions'];
   
   const { data } = await supabase
     .from("streaks")
@@ -43,43 +43,6 @@ export async function getStreaks() {
   return data;
 }
 
-export async function updateActiveDaysStreak() {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return;
-
-  const { data } = await supabase
-    .from("streaks")
-    .select("*")
-    .eq("user_id", user.id)
-    .eq("streak_type", "active_days")
-    .single();
-
-  const today = new Date();
-  today.setHours(0,0,0,0);
-  
-  if (data) {
-    const lastUpdate = new Date(data.last_updated);
-    lastUpdate.setHours(0,0,0,0);
-    
-    const diffTime = today.getTime() - lastUpdate.getTime();
-    const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
-
-    if (diffDays === 1) {
-      const newCurrent = data.current_streak + 1;
-      await supabase.from("streaks").update({
-        current_streak: newCurrent,
-        longest_streak: Math.max(newCurrent, data.longest_streak),
-        last_updated: new Date().toISOString()
-      }).eq("id", data.id);
-    } else if (diffDays > 1) {
-      await supabase.from("streaks").update({
-        current_streak: 1,
-        last_updated: new Date().toISOString()
-      }).eq("id", data.id);
-    }
-  }
-}
 
 export async function updateCompletedGoalsStreak(success: boolean) {
   const supabase = await createClient();
@@ -179,12 +142,11 @@ export async function evaluateBadges() {
       await supabase.from("user_badges").insert({ user_id: user.id, badge_id: id });
       
       const badgeNames: Record<string, string> = {
-        'green_starter': 'Green Starter',
-        'eco_warrior': 'Eco Warrior',
-        'carbon_saver': 'Carbon Saver',
-        'sustainability_champion': 'Sustainability Champion',
-        'energy_master': 'Energy Master',
-        'public_transport_hero': 'Public Transport Hero'
+        'carbon_reducer': 'Carbon Reducer',
+        'green_commuter': 'Green Commuter',
+        'energy_saver': 'Energy Saver',
+        'sustainable_shopper': 'Sustainable Shopper',
+        'sustainability_champion': 'Sustainability Champion'
       };
       
       await supabase.from("notifications").insert({
@@ -196,19 +158,16 @@ export async function evaluateBadges() {
     }
   };
 
-  const { count: entriesCount } = await supabase.from("carbon_entries").select("*", { count: 'exact', head: true }).eq("user_id", user.id);
   const { data: profile } = await supabase.from("profiles").select("sustainability_grade, total_carbon_saved").eq("user_id", user.id).single();
-  const { data: activeStreak } = await supabase.from("streaks").select("longest_streak").eq("user_id", user.id).eq("streak_type", "active_days").single();
-  
-  await checkAndAward('green_starter', (entriesCount || 0) > 0);
-  await checkAndAward('eco_warrior', (activeStreak?.longest_streak || 0) >= 7);
-  await checkAndAward('carbon_saver', (profile?.total_carbon_saved || 0) >= 50);
-  await checkAndAward('sustainability_champion', profile?.sustainability_grade === 'A');
-  
   const { data: allEntries } = await supabase.from("carbon_entries").select("activities(name, category)").eq("user_id", user.id);
+  
+  const ptCount = allEntries?.filter(e => ['Bus', 'Train', 'Metro', 'Bicycle', 'Walking'].includes((e.activities as any)?.name)).length || 0;
   const energyCount = allEntries?.filter(e => (e.activities as any)?.category === 'Energy').length || 0;
-  const ptCount = allEntries?.filter(e => ['Bus', 'Train', 'Metro'].includes((e.activities as any)?.name)).length || 0;
+  const shopCount = allEntries?.filter(e => (e.activities as any)?.category === 'Shopping').length || 0;
 
-  await checkAndAward('energy_master', energyCount >= 5);
-  await checkAndAward('public_transport_hero', ptCount >= 5);
+  await checkAndAward('carbon_reducer', (profile?.total_carbon_saved || 0) >= 50);
+  await checkAndAward('green_commuter', ptCount >= 5);
+  await checkAndAward('energy_saver', energyCount >= 5);
+  await checkAndAward('sustainable_shopper', shopCount >= 5);
+  await checkAndAward('sustainability_champion', profile?.sustainability_grade === 'A');
 }

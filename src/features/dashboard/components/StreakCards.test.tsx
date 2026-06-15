@@ -10,7 +10,6 @@ vi.mock('@/features/dashboard/services/gamification.service', () => ({
 describe('StreakCards Component', () => {
   it('renders correctly with given streak data', async () => {
     vi.spyOn(gamification, 'getStreaks').mockResolvedValue([
-      { id: '1', streak_type: 'active_days', current_streak: 5, longest_streak: 5 },
       { id: '2', streak_type: 'completed_goals', current_streak: 12, longest_streak: 15 },
       { id: '3', streak_type: 'carbon_reductions', current_streak: 3, longest_streak: 3 },
     ] as any)
@@ -18,10 +17,9 @@ describe('StreakCards Component', () => {
     render(<StreakCards />)
     
     await waitFor(() => {
-      expect(screen.getByText('Active Days')).toBeInTheDocument()
+      expect(screen.getByText('Goals Completed')).toBeInTheDocument()
     })
     
-    expect(screen.getAllByText('5')[0]).toBeInTheDocument()
     expect(screen.getByText('Goals Completed')).toBeInTheDocument()
     expect(screen.getAllByText('12')[0]).toBeInTheDocument()
     expect(screen.getByText('Weeks Reduced')).toBeInTheDocument()
@@ -30,13 +28,13 @@ describe('StreakCards Component', () => {
 
   it('renders default values when streaks are 0', async () => {
     vi.spyOn(gamification, 'getStreaks').mockResolvedValue([
-      { id: '1', streak_type: 'active_days', current_streak: 0, longest_streak: 0 },
+      { id: '2', streak_type: 'completed_goals', current_streak: 0, longest_streak: 0 },
     ] as any)
 
     render(<StreakCards />)
     
     await waitFor(() => {
-      expect(screen.getByText('Active Days')).toBeInTheDocument()
+      expect(screen.getByText('Goals Completed')).toBeInTheDocument()
     })
     
     const zeros = screen.getAllByText('0')

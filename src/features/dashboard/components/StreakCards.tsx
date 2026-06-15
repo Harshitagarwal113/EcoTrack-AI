@@ -17,14 +17,12 @@ export function StreakCards() {
   }, []);
 
   const getStreakIcon = (type: string) => {
-    if (type === 'active_days') return 'local_fire_department';
     if (type === 'completed_goals') return 'task_alt';
     if (type === 'carbon_reductions') return 'trending_down';
     return 'star';
   };
 
   const getStreakLabel = (type: string) => {
-    if (type === 'active_days') return 'Active Days';
     if (type === 'completed_goals') return 'Goals Completed';
     if (type === 'carbon_reductions') return 'Weeks Reduced';
     return type;
@@ -32,8 +30,8 @@ export function StreakCards() {
 
   if (isLoading) {
     return (
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 animate-pulse">
-        {[1, 2, 3].map(i => (
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 animate-pulse">
+        {[1, 2].map(i => (
           <div key={i} className="h-32 bg-surface-container/50 rounded-2xl"></div>
         ))}
       </div>
@@ -41,7 +39,7 @@ export function StreakCards() {
   }
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
       {streaks.map(streak => {
         const isMilestone = streak.current_streak > 0 && streak.current_streak % 7 === 0;
         
