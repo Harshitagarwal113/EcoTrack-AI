@@ -1,0 +1,57 @@
+import { google } from '@ai-sdk/google';
+import { streamText } from 'ai';
+import { createClient } from '@/services/supabase/server';
+import { checkRateLimit } from '@/utils/rateLimit';
+
+export const maxDuration = 30;
+
+export async function POST(req: Request) {
+  const ip = req.headers.get('x-forwarded-for') || '127.0.0.1';
+  const rl = checkRateLimit(ip, 5, 60 * 1000); // 5 requests per minute
+  if (!rl.success) {
+    return new Response('Rate limit exceeded', { status: 429 });
+  }
+
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
+  if (!user) {
+    return new Response('Unauthorized', { status: 401 });
+  }
+
+  const { data } = await req.json();
+
+  const systemPrompt = `
+    You are the AI Sustainability Coach for EcoTrack AI.
+    Your job is to generate a personalized "Sustainability Report Insights" section based on the provided user data.
+    
+    The user data is for a ${data.timeframe} report:
+    - Current Footprint: ${data.currentFootprint} kg CO2
+    - Trend vs Last Period: ${data.trend > 0 ? '+' : ''}${data.trend}%
+    - Sustainability Grade: ${data.grade}
+    - Total Carbon Saved All Time: ${data.carbonSaved} kg
+    - Goal Progress: ${data.goalProgress}%
+    
+    Generate two sections in Markdown:
+    ### AI Insights
+    (A brief, encouraging analysis of their performance. If the trend is positive (emissions increased), gently advise on reduction. If negative (emissions decreased), praise them.)
+    
+    ### Recommended Improvements
+    (2-3 actionable, personalized recommendations based on their grade and trend.)
+    
+    Keep the tone professional, premium, and concise. Do NOT include greetings or conclusions, just the two markdown sections requested.
+  `;
+
+  try {
+    const result = streamText({
+      model: google('gemini-3.1-flash-lite'),
+      system: systemPrompt,
+      messages: [{ role: 'user', content: 'Generate the report insights.' }],
+    });
+
+    return result.toTextStreamResponse();
+  } catch (error) {
+    console.error("AI Report Generation Error:", error);
+    return new Response("Failed to generate AI insights", { status: 500 });
+  }
+}
