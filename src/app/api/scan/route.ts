@@ -29,7 +29,7 @@ export async function POST(req: Request) {
     }
     
     const scanSchema = z.object({
-      imageBase64: z.string({ required_error: "No image provided" }).min(1, "No image provided")
+      imageBase64: z.string().min(1, "No image provided"),
     });
 
     const parseResult = scanSchema.safeParse(body);

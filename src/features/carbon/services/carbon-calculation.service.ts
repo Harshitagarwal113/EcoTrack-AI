@@ -3,7 +3,7 @@
 import { createClient } from "@/services/supabase/server";
 import { getEmissionFactors } from "@/services/carbon/emissionService";
 import { CalculatorInputSchema, type CalculatorInput } from "@/types";
-import { updateActiveDaysStreak, evaluateBadges } from "@/features/dashboard/services/gamification.service";
+import { evaluateBadges } from "@/features/dashboard/services/gamification.service";
 
 export async function fetchEmissionFactors() {
   return await getEmissionFactors();
@@ -89,7 +89,6 @@ export async function saveCarbonFootprint(rawInput: CalculatorInput) {
         return { success: false, error: "Failed to save entries." };
       }
       
-      await updateActiveDaysStreak();
       await evaluateBadges();
     }
 
