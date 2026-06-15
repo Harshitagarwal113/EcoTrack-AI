@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import "material-symbols";
 import "@/styles/globals.css";
-import { Sidebar } from "@/components/layout/sidebar";
 import { AuthProvider } from "@/features/auth/components/AuthProvider";
 import { ThemeProvider } from "@/components/theme-provider";
+import { QueryProvider } from "@/providers/query-provider";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 
@@ -25,9 +25,11 @@ export default function RootLayout({
       <body className="text-on-background font-body-md antialiased min-h-screen flex flex-col transition-colors duration-300 bg-background overflow-x-hidden">
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <AuthProvider>
-            {children}
-            <Analytics />
-            <SpeedInsights />
+            <QueryProvider>
+              {children}
+              <Analytics />
+              <SpeedInsights />
+            </QueryProvider>
           </AuthProvider>
         </ThemeProvider>
       </body>

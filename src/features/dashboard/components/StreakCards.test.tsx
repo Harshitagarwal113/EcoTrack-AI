@@ -1,5 +1,6 @@
 import { describe, it, expect, vi } from 'vitest'
 import { render, screen, waitFor } from '@testing-library/react'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { StreakCards } from './StreakCards'
 import * as gamification from '@/features/dashboard/services/gamification.service'
 
@@ -14,7 +15,12 @@ describe('StreakCards Component', () => {
       { id: '3', streak_type: 'carbon_reductions', current_streak: 3, longest_streak: 3 },
     ] as any)
 
-    render(<StreakCards />)
+    const queryClient = new QueryClient();
+    render(
+      <QueryClientProvider client={queryClient}>
+        <StreakCards />
+      </QueryClientProvider>
+    )
     
     await waitFor(() => {
       expect(screen.getByText('Goals Completed')).toBeInTheDocument()
@@ -31,7 +37,12 @@ describe('StreakCards Component', () => {
       { id: '2', streak_type: 'completed_goals', current_streak: 0, longest_streak: 0 },
     ] as any)
 
-    render(<StreakCards />)
+    const queryClient = new QueryClient();
+    render(
+      <QueryClientProvider client={queryClient}>
+        <StreakCards />
+      </QueryClientProvider>
+    )
     
     await waitFor(() => {
       expect(screen.getByText('Goals Completed')).toBeInTheDocument()

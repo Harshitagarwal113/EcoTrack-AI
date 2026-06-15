@@ -1,10 +1,17 @@
-import { useState, useMemo, useEffect, useCallback } from "react";
+import { useState, useMemo, useCallback } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { saveCarbonFootprint, fetchEmissionFactors } from "@/features/carbon/services/carbon-calculation.service";
 import type { CalculatorInput } from "@/types";
 import { EmissionFactors } from "@/services/carbon/emissionService";
 
 export function useCarbonTracker() {
-  const [factors, setFactors] = useState<EmissionFactors | null>(null);
+  const queryClient = useQueryClient();
+  
+  const { data: factors } = useQuery({
+    queryKey: ['emissionFactors'],
+    queryFn: fetchEmissionFactors,
+    staleTime: Infinity, // Emission factors rarely change
+  });
   
   const [formData, setFormData] = useState<CalculatorInput>({
     transportation: { car: 0, bus: 0, train: 0, metro: 0, bike: 0, walking: 0 },
@@ -13,12 +20,7 @@ export function useCarbonTracker() {
     shopping: { electronics: 0, clothing: 0, generalPurchases: 0 },
   });
 
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
-
-  useEffect(() => {
-    fetchEmissionFactors().then(setFactors);
-  }, []);
 
   const currentTotal = useMemo(() => {
     if (!factors) return 0;
@@ -63,26 +65,32 @@ export function useCarbonTracker() {
     }));
   }, []);
 
-  const handleSave = useCallback(async () => {
-    setIsSubmitting(true);
-    setSubmitSuccess(false);
-    
-    const res = await saveCarbonFootprint(formData);
-    
-    setIsSubmitting(false);
-    if (res.success) {
-      setSubmitSuccess(true);
-      setTimeout(() => setSubmitSuccess(false), 3000);
-    } else {
-      alert("Error saving: " + res.error);
+  const saveMutation = useMutation({
+    mutationFn: () => saveCarbonFootprint(formData),
+    onSuccess: (res) => {
+      if (res.success) {
+        setSubmitSuccess(true);
+        setTimeout(() => setSubmitSuccess(false), 3000);
+        // Invalidate streaks and history to instantly reflect the new entry on Dashboard and History pages
+        queryClient.invalidateQueries({ queryKey: ['streaks'] });
+        queryClient.invalidateQueries({ queryKey: ['badges'] });
+        queryClient.invalidateQueries({ queryKey: ['history'] });
+      } else {
+        alert("Error saving: " + res.error);
+      }
     }
-  }, [formData]);
+  });
+
+  const handleSave = useCallback(async () => {
+    setSubmitSuccess(false);
+    saveMutation.mutate();
+  }, [saveMutation]);
 
   return {
     factors,
     formData,
     setFormData,
-    isSubmitting,
+    isSubmitting: saveMutation.isPending,
     submitSuccess,
     currentTotal,
     currentGrade,

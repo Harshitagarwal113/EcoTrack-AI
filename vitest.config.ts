@@ -29,6 +29,6 @@ export default defineConfig({
         'src/components/ui/ExportButton.tsx', // Requires complex browser APIs like canvas
       ]
     },
-    exclude: ['node_modules', '.next'],
+    exclude: ['node_modules', '.next', 'tests/e2e/**'],
   },
 })

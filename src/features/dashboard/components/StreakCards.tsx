@@ -1,20 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { getStreaks } from "@/features/dashboard/services/gamification.service";
 
 export function StreakCards() {
-  const [streaks, setStreaks] = useState<any[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    async function load() {
-      const data = await getStreaks();
-      setStreaks(data);
-      setIsLoading(false);
-    }
-    load();
-  }, []);
+  const { data: streaks = [], isLoading } = useQuery({
+    queryKey: ['streaks'],
+    queryFn: getStreaks,
+  });
 
   const getStreakIcon = (type: string) => {
     if (type === 'completed_goals') return 'task_alt';

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { getBadges } from "@/features/dashboard/services/gamification.service";
 
 const BADGE_DEFINITIONS = [
@@ -13,17 +13,10 @@ const BADGE_DEFINITIONS = [
 ];
 
 export function AchievementTimeline() {
-  const [earnedBadges, setEarnedBadges] = useState<any[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    async function load() {
-      const data = await getBadges();
-      setEarnedBadges(data);
-      setIsLoading(false);
-    }
-    load();
-  }, []);
+  const { data: earnedBadges = [], isLoading } = useQuery({
+    queryKey: ['badges'],
+    queryFn: getBadges,
+  });
 
   const earnedIds = new Set(earnedBadges.map(b => b.badge_id));
 

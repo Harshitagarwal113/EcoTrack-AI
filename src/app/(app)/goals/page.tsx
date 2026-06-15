@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getProfileStats, getGoals, createGoal } from "@/features/goals/services/goals-management.service";
 import { getGlobalChallenges, getUserChallenges, joinChallenge } from "@/features/community/services/community-challenges.service";
 import { ExportButton } from "@/components/ui/ExportButton";
@@ -9,65 +10,61 @@ import { GoalsList } from "@/components/goals/GoalsList";
 import { ChallengesList } from "@/components/goals/ChallengesList";
 
 export default function GoalsPage() {
+  const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState<"goals" | "challenges">("goals");
-  const [stats, setStats] = useState<any>(null);
-  const [goals, setGoals] = useState<any[]>([]);
-  const [challenges, setChallenges] = useState<any[]>([]);
-  const [joinedChallenges, setJoinedChallenges] = useState<any[]>([]);
+  const { data: stats, isLoading: statsLoading } = useQuery({ queryKey: ['profileStats'], queryFn: getProfileStats });
+  const { data: goals = [], isLoading: goalsLoading } = useQuery({ queryKey: ['goals'], queryFn: getGoals });
+  const { data: challenges = [], isLoading: challengesLoading } = useQuery({ queryKey: ['challenges'], queryFn: getGlobalChallenges });
+  const { data: joinedChallenges = [], isLoading: joinedLoading } = useQuery({ queryKey: ['joinedChallenges'], queryFn: getUserChallenges });
   
-  const [isLoading, setIsLoading] = useState(true);
+  const isLoading = statsLoading || goalsLoading || challengesLoading || joinedLoading;
   
   // Goal Form State
   const [showGoalModal, setShowGoalModal] = useState(false);
   const [newGoalTitle, setNewGoalTitle] = useState("");
   const [newGoalTarget, setNewGoalTarget] = useState("10");
   const [newGoalDuration, setNewGoalDuration] = useState("7");
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  useEffect(() => {
-    loadData();
-  }, []);
+  const createGoalMutation = useMutation({
+    mutationFn: async () => createGoal(newGoalTitle, Number(newGoalTarget), Number(newGoalDuration)),
+    onSuccess: (res) => {
+      if (res.success) {
+        setShowGoalModal(false);
+        setNewGoalTitle("");
+        setNewGoalTarget("10");
+        setNewGoalDuration("7");
+        queryClient.invalidateQueries({ queryKey: ['goals'] });
+      } else {
+        alert("Failed to create goal: " + res.error);
+      }
+    }
+  });
 
-  const loadData = async () => {
-    setIsLoading(true);
-    const [statsData, goalsData, challengesData, joinedData] = await Promise.all([
-      getProfileStats(),
-      getGoals(),
-      getGlobalChallenges(),
-      getUserChallenges()
-    ]);
-    
-    setStats(statsData);
-    setGoals(goalsData || []);
-    setChallenges(challengesData || []);
-    setJoinedChallenges(joinedData || []);
-    setIsLoading(false);
-  };
+  const joinChallengeMutation = useMutation({
+    mutationFn: joinChallenge,
+    onMutate: async (challengeId) => {
+      // Optimistic Update
+      await queryClient.cancelQueries({ queryKey: ['joinedChallenges'] });
+      const previous = queryClient.getQueryData(['joinedChallenges']);
+      queryClient.setQueryData(['joinedChallenges'], (old: any) => [...(old || []), { challenge_id: challengeId }]);
+      return { previous };
+    },
+    onError: (err, challengeId, context) => {
+      queryClient.setQueryData(['joinedChallenges'], context?.previous);
+      alert("Failed to join challenge");
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ['joinedChallenges'] });
+    }
+  });
 
   const handleCreateGoal = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSubmitting(true);
-    const res = await createGoal(newGoalTitle, Number(newGoalTarget), Number(newGoalDuration));
-    setIsSubmitting(false);
-    
-    if (res.success) {
-      setShowGoalModal(false);
-      setNewGoalTitle("");
-      setNewGoalTarget("10");
-      setNewGoalDuration("7");
-      loadData();
-    } else {
-      alert("Failed to create goal: " + res.error);
-    }
+    createGoalMutation.mutate();
   };
 
   const handleJoinChallenge = async (challengeId: string) => {
-    const res = await joinChallenge(challengeId);
-    if (res.success) {
-      loadData();
-    } else {
-      alert("Failed to join challenge: " + res.error);
-    }
+    joinChallengeMutation.mutate(challengeId);
   };
 
   const hasJoinedChallenge = (challengeId: string) => {
@@ -157,7 +154,7 @@ export default function GoalsPage() {
         newGoalDuration={newGoalDuration}
         setNewGoalDuration={setNewGoalDuration}
         handleCreateGoal={handleCreateGoal}
-        isSubmitting={isSubmitting}
+        isSubmitting={createGoalMutation.isPending}
       />
 
     </div>
