@@ -120,7 +120,7 @@ export async function evaluateAndGenerateReminders() {
         .gte("date", sevenDaysAgo.toISOString());
         
       const categoryMap = new Map<string, number>();
-      recentEntries?.forEach(e => {
+      recentEntries?.forEach((e: any) => {
         const act = e.activities as unknown as { category: string } | null;
         const cat = act?.category || 'Other';
         categoryMap.set(cat, (categoryMap.get(cat) || 0) + Number(e.carbon_calculated));
@@ -134,7 +134,7 @@ export async function evaluateAndGenerateReminders() {
         .neq("status", "active")
         .limit(5);
         
-      const prevGoalsStr = previousGoals?.map(g => `"${g.title}" (${g.status})`).join(', ') || 'None';
+      const prevGoalsStr = previousGoals?.map((g: any) => `"${g.title}" (${g.status})`).join(', ') || 'None';
 
       const prompt = `The user is trying to reduce their carbon footprint.
 In the last 7 days, their emissions breakdown was: ${breakdownStr || 'No data yet'}.

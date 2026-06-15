@@ -70,7 +70,7 @@ export async function getEmissionFactors(): Promise<EmissionFactors> {
       "General Purchases": "generalPurchases"
     };
 
-    activities.forEach(a => {
+    activities.forEach((a: any) => {
       const key = nameMap[a.name];
       if (key) {
         factors[key] = Number(a.carbon_factor);

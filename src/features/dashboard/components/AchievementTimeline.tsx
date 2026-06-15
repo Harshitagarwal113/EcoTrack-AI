@@ -18,7 +18,7 @@ export function AchievementTimeline() {
     queryFn: getBadges,
   });
 
-  const earnedIds = new Set(earnedBadges.map(b => b.badge_id));
+  const earnedIds = new Set(earnedBadges.map((b: any) => b.badge_id));
 
   if (isLoading) {
     return (
@@ -34,7 +34,7 @@ export function AchievementTimeline() {
     <div className="flex gap-4 overflow-x-auto pb-4 hide-scrollbar snap-x snap-mandatory">
       {BADGE_DEFINITIONS.map((badgeDef) => {
         const isEarned = earnedIds.has(badgeDef.id);
-        const earnedData = earnedBadges.find(b => b.badge_id === badgeDef.id);
+        const earnedData = earnedBadges.find((b: any) => b.badge_id === badgeDef.id);
         return (
           <div 
             key={badgeDef.id} 

@@ -2,6 +2,10 @@ import { Page } from '@playwright/test';
 
 // Mocks the Supabase authenticated session and standard dashboard data
 export async function mockAuthenticatedSession(page: Page) {
+  // Capture page logs and errors
+  page.on('console', msg => console.log(`[browser console] ${msg.type().toUpperCase()}: ${msg.text()}`));
+  page.on('pageerror', err => console.error(`[browser error] ${err.message}`));
+
   // Mock the auth user
   await page.route('**/auth/v1/user', async (route) => {
     await route.fulfill({
@@ -65,14 +69,12 @@ export async function mockAuthenticatedSession(page: Page) {
     {
       name: 'sb-access-token',
       value: 'dummy-token',
-      domain: 'localhost',
-      path: '/',
+      url: 'http://localhost:3000',
     },
     {
       name: 'sb-refresh-token',
       value: 'dummy-token',
-      domain: 'localhost',
-      path: '/',
+      url: 'http://localhost:3000',
     }
   ]);
 }

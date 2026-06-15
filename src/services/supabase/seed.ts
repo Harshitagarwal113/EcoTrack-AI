@@ -37,7 +37,7 @@ export async function seedDemoData() {
     }
 
     // Helper to get random activity
-    const getAct = (cat: string) => activities.find(a => a.category === cat);
+    const getAct = (cat: string) => activities.find((a: any) => a.category === cat);
     const driveAct = getAct('transportation') || activities[0];
     const elecAct = getAct('energy') || activities[0];
     const foodAct = getAct('food') || activities[0];

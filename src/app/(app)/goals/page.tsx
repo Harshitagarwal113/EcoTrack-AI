@@ -67,7 +67,7 @@ export default function GoalsPage() {
   };
 
   const hasJoinedChallenge = (challengeId: string) => {
-    return joinedChallenges.some(jc => jc.challenge_id === challengeId);
+    return (joinedChallenges as { challenge_id: string }[]).some(jc => jc.challenge_id === challengeId);
   };
 
   return (

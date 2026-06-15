@@ -26,22 +26,9 @@ test.describe('Receipt Scanner', () => {
       });
     });
 
-    // Instead of actually uploading a file which requires a real file on disk,
-    // we can simulate the API call or provide a dummy buffer.
-    // For this test, we will just click the UI elements and wait for the intercepted mock.
-    
-    // In a real Playwright scenario, we use setInputFiles:
-    // await page.locator('input[type="file"]').setInputFiles({
-    //   name: 'dummy-receipt.jpg',
-    //   mimeType: 'image/jpeg',
-    //   buffer: Buffer.from('dummy data')
-    // });
-    
-    // Check for the upload UI
-    await expect(page.getByText('Upload Receipt')).toBeVisible();
-    
-    // Since we don't have a real file, we'll verify the page layout is correct
-    // Real E2E file uploads can be flaky on CI without a dedicated fixtures folder
-    await expect(page.getByText('Drag and drop your receipt image here')).toBeVisible();
+    // Check for the correct header and upload UI text elements
+    await expect(page.locator('h1', { hasText: 'Receipt Scanner' })).toBeVisible();
+    await expect(page.getByText('Click to Upload')).toBeVisible();
+    await expect(page.getByText('Supported formats: JPEG, PNG. Gemini Vision will automatically extract the details.')).toBeVisible();
   });
 });

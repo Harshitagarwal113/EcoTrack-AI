@@ -33,7 +33,7 @@ export async function saveCarbonFootprint(rawInput: CalculatorInput) {
       return { success: false, error: "Failed to load activities reference data" };
     }
 
-    const getActivity = (name: string) => activities.find(a => a.name === name);
+    const getActivity = (name: string) => activities.find((a: any) => a.name === name);
 
     // 2. Prepare entries
     const entriesToInsert: Array<{
