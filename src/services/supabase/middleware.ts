@@ -36,7 +36,7 @@ export async function updateSession(request: NextRequest) {
   } = await supabase.auth.getUser()
 
   const isAuthPage = request.nextUrl.pathname.startsWith('/auth')
-  const isPublicRoute = request.nextUrl.pathname === '/auth/login' || request.nextUrl.pathname === '/auth/callback'
+  const isPublicRoute = request.nextUrl.pathname === '/auth/login' || request.nextUrl.pathname === '/auth/callback' || request.nextUrl.pathname === '/'
 
   if (!user && !isPublicRoute && !request.nextUrl.pathname.startsWith('/_next') && !request.nextUrl.pathname.includes('.')) {
     // no user, potentially respond by redirecting the user to the login page
@@ -45,10 +45,10 @@ export async function updateSession(request: NextRequest) {
     return NextResponse.redirect(url)
   }
 
-  // if user is signed in and the current path is /auth/login redirect the user to /
-  if (user && request.nextUrl.pathname === '/auth/login') {
+  // if user is signed in and the current path is /auth/login or / redirect the user to /dashboard
+  if (user && (request.nextUrl.pathname === '/auth/login' || request.nextUrl.pathname === '/')) {
     const url = request.nextUrl.clone()
-    url.pathname = '/'
+    url.pathname = '/dashboard'
     return NextResponse.redirect(url)
   }
 
