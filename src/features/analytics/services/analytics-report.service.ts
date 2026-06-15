@@ -40,11 +40,11 @@ export async function getReportData(timeframe: 'weekly' | 'monthly') {
       .eq("user_id", user.id)
       .gte("date", startDate.toISOString());
 
-    const currentTotal = currentEntries?.reduce((sum: number, e: any) => sum + Number(e.carbon_calculated), 0) || 0;
+    const currentTotal = currentEntries?.reduce((sum: number, e: { carbon_calculated: number | string | null }) => sum + Number(e.carbon_calculated), 0) || 0;
 
     const chartDataMap = new Map<string, number>();
     
-    currentEntries?.forEach((entry: any) => {
+    currentEntries?.forEach((entry: { date: string | null; carbon_calculated: number | string | null }) => {
       const d = new Date(entry.date || new Date());
       let key = '';
       if (timeframe === 'weekly') {
@@ -76,7 +76,7 @@ export async function getReportData(timeframe: 'weekly' | 'monthly') {
       .gte("date", prevStartDate.toISOString())
       .lte("date", prevEndDate.toISOString());
 
-    const prevTotal = prevEntries?.reduce((sum: number, e: any) => sum + Number(e.carbon_calculated), 0) || 0;
+    const prevTotal = prevEntries?.reduce((sum: number, e: { carbon_calculated: number | string | null }) => sum + Number(e.carbon_calculated), 0) || 0;
     
     let trend = 0;
     if (prevTotal > 0) {
@@ -91,8 +91,8 @@ export async function getReportData(timeframe: 'weekly' | 'monthly') {
 
     let goalProgress = 0;
     if (goals && goals.length > 0) {
-      const totalTarget = goals.reduce((sum: number, g: any) => sum + Number(g.target_reduction), 0);
-      const currentTarget = goals.reduce((sum: number, g: any) => sum + Number(g.current_progress), 0);
+      const totalTarget = goals.reduce((sum: number, g: { target_reduction: number | string | null }) => sum + Number(g.target_reduction), 0);
+      const currentTarget = goals.reduce((sum: number, g: { current_progress: number | string | null }) => sum + Number(g.current_progress), 0);
       if (totalTarget > 0) {
         goalProgress = Math.min(100, Math.round((currentTarget / totalTarget) * 100));
       }

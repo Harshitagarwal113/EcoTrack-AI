@@ -26,7 +26,7 @@ export async function getStreaks() {
     return toInsert;
   }
   
-  const existingTypes = data.map((d: any) => d.streak_type);
+  const existingTypes = data.map((d: { streak_type: string }) => d.streak_type);
   const missing = types.filter(t => !existingTypes.includes(t));
   if (missing.length > 0) {
     const toInsert = missing.map(t => ({
@@ -133,7 +133,7 @@ export async function evaluateBadges() {
     .select("badge_id")
     .eq("user_id", user.id);
     
-  const earnedBadgeIds = new Set(existingBadges?.map((b: any) => b.badge_id) || []);
+  const earnedBadgeIds = new Set(existingBadges?.map((b: { badge_id: string }) => b.badge_id) || []);
 
   const newlyEarned: string[] = [];
   const checkAndAward = async (id: string, condition: boolean) => {
@@ -161,15 +161,15 @@ export async function evaluateBadges() {
   const { data: profile } = await supabase.from("profiles").select("sustainability_grade, total_carbon_saved").eq("user_id", user.id).single();
   const { data: allEntries } = await supabase.from("carbon_entries").select("activities(name, category)").eq("user_id", user.id);
   
-  const ptCount = allEntries?.filter((e: any) => {
+  const ptCount = allEntries?.filter((e: { activities: unknown }) => {
     const act = e.activities as unknown as { name: string; category: string } | null;
     return act && ['Bus', 'Train', 'Metro', 'Bicycle', 'Walking'].includes(act.name);
   }).length || 0;
-  const energyCount = allEntries?.filter((e: any) => {
+  const energyCount = allEntries?.filter((e: { activities: unknown }) => {
     const act = e.activities as unknown as { name: string; category: string } | null;
     return act && act.category === 'Energy';
   }).length || 0;
-  const shopCount = allEntries?.filter((e: any) => {
+  const shopCount = allEntries?.filter((e: { activities: unknown }) => {
     const act = e.activities as unknown as { name: string; category: string } | null;
     return act && act.category === 'Shopping';
   }).length || 0;

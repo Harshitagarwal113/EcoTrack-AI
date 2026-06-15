@@ -28,7 +28,7 @@ export const getDashboardMetrics = cache(async function getDashboardMetrics() {
       .eq("user_id", user.id)
       .gte("date", startOfMonth.toISOString());
 
-    const currentTotal = currentMonthEntries?.reduce((sum: number, e: any) => sum + Number(e.carbon_calculated), 0) || 0;
+    const currentTotal = currentMonthEntries?.reduce((sum: number, e: { carbon_calculated: number | string | null }) => sum + Number(e.carbon_calculated), 0) || 0;
 
     // 3. Get Previous Month Entries for Trend
     const startOfPrevMonth = new Date(startOfMonth);
@@ -44,7 +44,7 @@ export const getDashboardMetrics = cache(async function getDashboardMetrics() {
       .gte("date", startOfPrevMonth.toISOString())
       .lte("date", endOfPrevMonth.toISOString());
 
-    const prevTotal = prevMonthEntries?.reduce((sum: number, e: any) => sum + Number(e.carbon_calculated), 0) || 0;
+    const prevTotal = prevMonthEntries?.reduce((sum: number, e: { carbon_calculated: number | string | null }) => sum + Number(e.carbon_calculated), 0) || 0;
     
     let trend = 0;
     if (prevTotal > 0) {
@@ -60,8 +60,8 @@ export const getDashboardMetrics = cache(async function getDashboardMetrics() {
 
     let goalProgress = 0;
     if (goals && goals.length > 0) {
-      const totalTarget = goals.reduce((sum: number, g: any) => sum + Number(g.target_reduction), 0);
-      const currentTarget = goals.reduce((sum: number, g: any) => sum + Number(g.current_progress), 0);
+      const totalTarget = goals.reduce((sum: number, g: { target_reduction: number | string | null }) => sum + Number(g.target_reduction), 0);
+      const currentTarget = goals.reduce((sum: number, g: { current_progress: number | string | null }) => sum + Number(g.current_progress), 0);
       if (totalTarget > 0) {
         goalProgress = Math.min(100, Math.round((currentTarget / totalTarget) * 100));
       }
@@ -113,7 +113,7 @@ export const getFootprintChartData = cache(async function getFootprintChartData(
       aggregated[dateStr] = 0;
     }
 
-    entries.forEach((e: any) => {
+    entries.forEach((e: { date: string; carbon_calculated: number | string | null }) => {
       const dateStr = e.date;
       if (aggregated[dateStr] !== undefined) {
         aggregated[dateStr] += Number(e.carbon_calculated);

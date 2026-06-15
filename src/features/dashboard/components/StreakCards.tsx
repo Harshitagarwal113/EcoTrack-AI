@@ -33,7 +33,7 @@ export function StreakCards() {
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-      {streaks.map((streak: any) => {
+      {streaks.map((streak: { streak_type: string; current_streak: number; longest_streak: number }) => {
         const isMilestone = streak.current_streak > 0 && streak.current_streak % 7 === 0;
         
         return (
