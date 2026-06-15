@@ -16,7 +16,7 @@ export default function CoachPage() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!input.trim() || isLoading) return;
-    sendMessage({ role: 'user', content: input });
+    sendMessage({ role: 'user', parts: [{ type: 'text', text: input }] });
     setInput('');
   };
 
@@ -48,8 +48,8 @@ export default function CoachPage() {
                 I have real-time access to your carbon footprint. Ask me to analyze your progress, suggest weekly goals, or recommend sustainable habits!
               </p>
               <div className="flex flex-wrap justify-center gap-2 mt-4">
-                <button onClick={() => sendMessage({ role: 'user', content: "Analyze my carbon footprint this month." })} className="bg-white/50 border border-white/50 px-4 py-2 rounded-full font-label-sm text-on-surface-variant hover:text-primary transition-colors">Analyze footprint</button>
-                <button onClick={() => sendMessage({ role: 'user', content: "Generate 3 weekly sustainability goals." })} className="bg-white/50 border border-white/50 px-4 py-2 rounded-full font-label-sm text-on-surface-variant hover:text-primary transition-colors">Generate goals</button>
+                <button onClick={() => sendMessage({ role: 'user', parts: [{ type: 'text', text: "Analyze my carbon footprint this month." }] })} className="bg-white/50 border border-white/50 px-4 py-2 rounded-full font-label-sm text-on-surface-variant hover:text-primary transition-colors">Analyze footprint</button>
+                <button onClick={() => sendMessage({ role: 'user', parts: [{ type: 'text', text: "Generate 3 weekly sustainability goals." }] })} className="bg-white/50 border border-white/50 px-4 py-2 rounded-full font-label-sm text-on-surface-variant hover:text-primary transition-colors">Generate goals</button>
               </div>
             </div>
           )}
