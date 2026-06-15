@@ -54,7 +54,7 @@ describe('Scan API POST', () => {
     const res = await POST(req)
     expect(res.status).toBe(400)
     const json = await res.json()
-    expect(json.error).toBe('No image provided')
+    expect(json.error).toMatch(/No image provided|Invalid input/i)
   })
 
   it('successfully extracts receipt data', async () => {

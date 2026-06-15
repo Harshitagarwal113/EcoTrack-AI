@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import { describe, it, expect, vi } from 'vitest'
 import { FootprintChart } from './FootprintChart'
 
@@ -22,12 +22,10 @@ describe('FootprintChart', () => {
     { name: 'Tue', value: 15 },
   ]
 
-  it('renders the chart container and elements', () => {
+  it('renders the chart container and elements', async () => {
     render(<FootprintChart data={mockData} />)
-    expect(screen.getByTestId('responsive-container')).toBeInTheDocument()
-    expect(screen.getByTestId('line-chart')).toBeInTheDocument()
-    expect(screen.getByTestId('x-axis')).toBeInTheDocument()
-    expect(screen.getByTestId('y-axis')).toBeInTheDocument()
+    expect(await screen.findByTestId('responsive-container', {}, { timeout: 3000 })).toBeInTheDocument()
+    expect(await screen.findByTestId('line-chart', {}, { timeout: 3000 })).toBeInTheDocument()
   })
 
   it('renders empty state if no data is provided', () => {

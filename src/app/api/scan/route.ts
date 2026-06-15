@@ -21,15 +21,20 @@ export async function POST(req: Request) {
       return Response.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const body = await req.json();
+    let body;
+    try {
+      body = await req.json();
+    } catch (e) {
+      return Response.json({ error: 'No image provided' }, { status: 400 });
+    }
     
     const scanSchema = z.object({
-      imageBase64: z.string().min(1, "No image provided")
+      imageBase64: z.string({ required_error: "No image provided" }).min(1, "No image provided")
     });
 
     const parseResult = scanSchema.safeParse(body);
     if (!parseResult.success) {
-      return Response.json({ error: parseResult.error.errors[0].message }, { status: 400 });
+      return Response.json({ error: parseResult.error?.issues?.[0]?.message || 'Invalid data' }, { status: 400 });
     }
 
     const { imageBase64 } = parseResult.data;
